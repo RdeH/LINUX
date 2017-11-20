@@ -1,0 +1,18 @@
+# 利用iptable实现端口转发(需使用root权限)
+
+# 打开IP转发
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# 添加NAT规则，并重启iptables
+# 停止iptables服务
+service iptables stop
+
+# 添加nat转发规则
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 80 -j DNAT --to 127.0.0.1:8080
+
+# 保存iptables服务
+service iptables save
+
+# 启动iptables服务
+service iptables start
